@@ -83,7 +83,8 @@ export const THEMES: Record<ThemeId, ReceiptTheme> = {
 
 export const THEME_IDS = Object.keys(THEMES) as ThemeId[]
 
-export const isThemeId = (v: unknown): v is ThemeId => typeof v === 'string' && v in THEMES
+// in 연산자는 'toString' 등 프로토타입 키도 통과시키므로 자체 키만 허용함
+export const isThemeId = (v: unknown): v is ThemeId => typeof v === 'string' && Object.hasOwn(THEMES, v)
 
 export const FONT_FAMILY: Record<ReceiptTheme['font'], string> = {
   mono: '"Nanum Gothic Coding"',

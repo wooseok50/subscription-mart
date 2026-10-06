@@ -2,7 +2,7 @@ import { parseDate } from './schedule'
 import { isThemeId } from './themes'
 import { CATEGORIES, type AppData, type RefItem, type Subscription } from './types'
 
-const KEY = 'subscription-calc:v1'
+export const STORAGE_KEY = 'subscription-calc:v1'
 const MAX_ITEMS = 200
 const MAX_PRICE = 1_000_000_000
 
@@ -62,7 +62,7 @@ export function parseData(v: unknown): AppData | null {
 // 사생활 보호 모드 등에서 storage 접근 시 예외 가능
 export function loadData(): AppData {
   try {
-    const raw = localStorage.getItem(KEY)
+    const raw = localStorage.getItem(STORAGE_KEY)
     return (raw && parseData(JSON.parse(raw))) || DEFAULT_DATA
   } catch {
     return DEFAULT_DATA
@@ -71,7 +71,7 @@ export function loadData(): AppData {
 
 export function saveData(data: AppData): void {
   try {
-    localStorage.setItem(KEY, JSON.stringify(data))
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data))
   } catch {
     // 저장 실패 시 메모리 상태만 유지함
   }
