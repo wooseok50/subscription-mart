@@ -152,6 +152,20 @@ button {
   transform: rotate(-1deg);
 }
 
+/* 오류 복구 화면 */
+.crash {
+  max-width: 560px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.crash h1 {
+  font-family: var(--f-mono);
+  font-size: clamp(1.6rem, 4vw, 2.4rem);
+  line-height: 1.25;
+}
+
 /* ───── 단계 제목 ───── */
 .step {
   display: flex;

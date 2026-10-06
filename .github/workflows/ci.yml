@@ -1,0 +1,29 @@
+# push·PR마다 lint, 테스트, 빌드, 의존성 감사 실행
+name: CI
+
+on:
+  push:
+    branches: [master, develop]
+  pull_request:
+
+# 최소 권한. 저장소 읽기만 허용
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm test
+      - run: npm run build
+      - run: npm audit --audit-level=high
