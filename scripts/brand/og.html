@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <title>og</title>
+    <style>
+      @font-face {
+        font-family: 'Nanum Gothic Coding';
+        font-weight: 400;
+        src: url(../../node_modules/@fontsource/nanum-gothic-coding/files/nanum-gothic-coding-korean-400-normal.woff2) format('woff2');
+      }
+      @font-face {
+        font-family: 'Nanum Gothic Coding';
+        font-weight: 700;
+        src: url(../../node_modules/@fontsource/nanum-gothic-coding/files/nanum-gothic-coding-korean-700-normal.woff2) format('woff2');
+      }
+      @font-face {
+        font-family: 'Nanum Pen Script';
+        src: url(../../node_modules/@fontsource/nanum-pen-script/files/nanum-pen-script-korean-400-normal.woff2) format('woff2');
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+      }
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+        overflow: hidden;
+      }
+      body {
+        position: relative;
+        font-family: 'Nanum Gothic Coding', monospace;
+        color: #2b2622;
+        background-color: #e9e0cf;
+        background-image:
+          radial-gradient(ellipse at 15% -10%, rgb(255 240 200 / 0.6), transparent 55%),
+          repeating-linear-gradient(90deg, rgb(120 96 60 / 0.06) 0 1px, transparent 1px 7px),
+          repeating-linear-gradient(0deg, rgb(120 96 60 / 0.06) 0 1px, transparent 1px 11px);
+      }
+      .copy {
+        position: absolute;
+        left: 80px;
+        top: 96px;
+        width: 620px;
+      }
+      .eyebrow {
+        font-size: 22px;
+        letter-spacing: 0.2em;
+        color: #c8423a;
+        margin-bottom: 30px;
+      }
+      h1 {
+        font-size: 66px;
+        line-height: 1.18;
+        letter-spacing: -0.03em;
+        font-weight: 700;
+      }
+      em {
+        font-style: normal;
+        white-space: nowrap;
+        background: linear-gradient(transparent 58%, rgb(255 214 64 / 0.6) 58%);
+      }
+      .hand {
+        font-family: 'Nanum Pen Script', cursive;
+        font-size: 46px;
+        color: #c8423a;
+        margin-top: 34px;
+        transform: rotate(-1.5deg);
+      }
+      .receipt {
+        position: absolute;
+        right: 90px;
+        top: -20px;
+        width: 360px;
+        height: 600px;
+        padding: 70px 34px 0;
+        background: #fffdf6;
+        box-shadow: 0 24px 50px -14px rgb(60 40 20 / 0.45);
+        transform: rotate(3deg);
+        font-size: 19px;
+      }
+      .printer {
+        position: absolute;
+        right: 64px;
+        top: -10px;
+        width: 420px;
+        height: 44px;
+        border-radius: 0 0 10px 10px;
+        background: linear-gradient(#4a4440, #2d2926);
+        transform: rotate(3deg);
+      }
+      .shop {
+        text-align: center;
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: 0.3em;
+      }
+      .en {
+        text-align: center;
+        font-size: 12px;
+        letter-spacing: 0.35em;
+        margin: 4px 0 16px;
+      }
+      .dash {
+        border-top: 2px dashed rgb(43 38 34 / 0.5);
+        margin: 14px 0;
+      }
+      .row {
+        display: flex;
+        justify-content: space-between;
+        margin: 10px 0;
+      }
+      .row b {
+        font-weight: 700;
+      }
+      .faint {
+        color: #8c8478;
+      }
+      .void {
+        color: #c8423a;
+        font-weight: 700;
+      }
+      .total {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        font-weight: 700;
+      }
+      .total strong {
+        font-size: 34px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="copy">
+      <p class="eyebrow">구독상회 · SUBSCRIPTION MART</p>
+      <h1>매달 조금씩,<br />1년이면 <em>영수증 한 장.</em></h1>
+      <p class="hand">내 구독, 1년치 영수증으로 뽑아보기 →</p>
+    </div>
+    <div class="receipt">
+      <p class="shop">구독상회</p>
+      <p class="en">SUBSCRIPTION MART</p>
+      <div class="dash"></div>
+      <div class="row"><b>영상 구독</b><span>204,000</span></div>
+      <div class="row"><b>음악 구독</b><span>131,880</span></div>
+      <div class="row"><b>클라우드</b><span>52,800</span></div>
+      <div class="row faint"><s>안 보는 구독</s><span class="void">VOID</span></div>
+      <div class="dash"></div>
+      <div class="total"><span>합계 TOTAL</span><strong>₩388,680</strong></div>
+      <div class="dash"></div>
+      <p class="faint" style="text-align: center; font-size: 15px">이 돈이면 ☕ 아메리카노 86잔</p>
+    </div>
+    <div class="printer"></div>
+  </body>
+</html>

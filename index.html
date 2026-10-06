@@ -2,10 +2,26 @@
 <html lang="ko">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="매달 나가는 구독료를 정리하는 계산기. 데이터는 브라우저에만 저장됨." />
-    <title>구독 계산기</title>
+    <title>구독상회 · 1년치 구독 영수증</title>
+    <meta name="description" content="매달 조금씩, 1년이면 영수증 한 장. 지금 쓰는 구독의 1년치 청구서를 영수증으로 뽑아보세요." />
+    <meta name="theme-color" content="#e9e0cf" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <link rel="canonical" href="__SITE_URL__/" />
+
+    <!-- 링크 미리보기(카카오톡 등). __SITE_URL__은 빌드 시 vite.config에서 치환 -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="구독상회" />
+    <meta property="og:title" content="구독상회 · 1년치 구독 영수증" />
+    <meta property="og:description" content="매달 조금씩, 1년이면 영수증 한 장. 내 구독, 1년치 영수증으로 뽑아보기" />
+    <meta property="og:url" content="__SITE_URL__/" />
+    <meta property="og:image" content="__SITE_URL__/og.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="ko_KR" />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div id="root"></div>
