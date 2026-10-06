@@ -77,6 +77,8 @@ lint → 테스트 → 빌드 → `npm audit --audit-level=high` 순서로 실�
 | XSS | 사용자 문자열은 React 텍스트로만 출력(`dangerouslySetInnerHTML` 미사용) |
 | 장애 복구 | 렌더링 오류 시 `ErrorBoundary`가 백업·초기화 화면 표시 |
 | 의존성 | `npm audit` CI 검사, Dependabot 주간 업데이트 |
+| 보안 문의 | `/.well-known/security.txt` (RFC 9116). 빌드 시 생성, `Expires`는 빌드 시점 +1년이므로 1년 안에 재배포 필요 |
+| 개인정보 안내 | `/privacy` (`privacy.html`). 수집 정보 없음, 브라우저 저장 항목, 공유 링크, 호스팅 사업자(Vercel) 처리 내용 명시 |
 
 잔여 위험
 

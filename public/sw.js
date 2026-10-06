@@ -1,6 +1,6 @@
 // 오프라인 실행용 최소 서비스 워커
 // 해시 파일명 자원(/assets)은 캐시 우선, 페이지는 네트워크 우선 후 캐시 대체
-const CACHE = 'subscription-receipt-v1'
+const CACHE = 'subscription-receipt-v2'
 const SHELL = ['/', '/manifest.webmanifest', '/favicon.svg', '/icons/icon-192.png']
 
 self.addEventListener('install', (event) => {
@@ -32,11 +32,13 @@ self.addEventListener('fetch', (event) => {
   if (url.origin !== self.location.origin) return
 
   if (req.mode === 'navigate') {
-    // 공유 링크(#)는 서버로 가지 않으므로 '/' 하나로 캐시함
+    // 페이지별 경로로 캐시함. 해시(#공유 링크)는 요청 URL에 포함되지 않음
+    // 쿼리 문자열은 키에서 제외해 캐시 무한 증가 방지
+    const key = url.pathname
     event.respondWith(
       fetch(req)
-        .then((res) => put('/', res))
-        .catch(() => caches.match('/')),
+        .then((res) => put(key, res))
+        .catch(() => caches.match(key).then((hit) => hit || caches.match('/'))),
     )
     return
   }
