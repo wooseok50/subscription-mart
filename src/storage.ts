@@ -1,4 +1,5 @@
 import { parseDate } from './schedule'
+import { isThemeId } from './themes'
 import { CATEGORIES, type AppData, type RefItem, type Subscription } from './types'
 
 const KEY = 'subscription-calc:v1'
@@ -13,7 +14,7 @@ export const DEFAULT_REFS: RefItem[] = [
   { id: 'trip', emoji: '✈️', label: '제주 왕복 항공', unit: '회', price: 150_000 },
 ]
 
-export const DEFAULT_DATA: AppData = { version: 2, usdRate: 1400, items: [], refs: DEFAULT_REFS }
+export const DEFAULT_DATA: AppData = { version: 2, usdRate: 1400, items: [], refs: DEFAULT_REFS, theme: 'mart' }
 
 const isRecord = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null
 const isPrice = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= MAX_PRICE
@@ -55,7 +56,7 @@ export function parseData(v: unknown): AppData | null {
     .slice(0, MAX_ITEMS)
     .map(parseItem)
     .filter((s): s is Subscription => s !== null)
-  return { version: 2, usdRate: rate, items, refs: parseRefs(v.refs) }
+  return { version: 2, usdRate: rate, items, refs: parseRefs(v.refs), theme: isThemeId(v.theme) ? v.theme : 'mart' }
 }
 
 // 사생활 보호 모드 등에서 storage 접근 시 예외 가능
