@@ -22,11 +22,14 @@ export interface RefItem {
   price: number
 }
 
+export type ThemeId = 'mart' | 'store' | 'cafe' | 'dabang'
+
 export interface AppData {
   version: 2
   usdRate: number
   items: Subscription[]
   refs: RefItem[]
+  theme: ThemeId
 }
 
 export const CATEGORIES = ['영상', '음악', '클라우드', '생산성', '게임', '쇼핑', '교육', '기타'] as const
