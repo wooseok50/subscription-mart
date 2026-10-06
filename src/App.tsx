@@ -453,7 +453,11 @@ export default function App() {
         </details>
       )}
 
-      <footer className="foot no-print">구독상회는 실제 가게가 아니에요 · 서버로 보내는 데이터 없음 · 모든 기록은 내 브라우저에만</footer>
+      <footer className="foot no-print">
+        구독상회는 실제 가게가 아니에요 · 서버로 보내는 데이터 없음 · 모든 기록은 내 브라우저에만
+        <br />
+        <a href="/privacy">개인정보 처리 안내</a> · <a href="mailto:woosuck6008@gmail.com">문의</a>
+      </footer>
 
       {wrap && (
         <WrapCardModal

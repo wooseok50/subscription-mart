@@ -1,0 +1,79 @@
+/* 개인정보 안내 페이지. 앱과 같은 토큰·글꼴 재사용 */
+@import '@fontsource/gowun-dodum/400.css';
+@import '@fontsource/nanum-gothic-coding/400.css';
+@import '@fontsource/nanum-gothic-coding/700.css';
+@import '@fontsource/nanum-pen-script/400.css';
+@import './index.css';
+
+.doc {
+  max-width: 760px;
+  gap: 40px;
+}
+
+.doc .hero h1 {
+  font-size: clamp(1.9rem, 5vw, 2.8rem);
+  margin-bottom: 8px;
+}
+
+.doc a {
+  color: var(--accent);
+  text-underline-offset: 3px;
+}
+
+.doc .eyebrow a {
+  text-decoration: none;
+}
+
+.doc-body {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  line-height: 1.75;
+}
+
+.doc-body h2 {
+  font-family: var(--f-mono);
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.doc-body p + p {
+  margin-top: 8px;
+}
+
+.doc-body ul {
+  margin: 8px 0;
+  padding-left: 1.2em;
+}
+
+.doc-body em {
+  font-style: normal;
+  background: linear-gradient(transparent 60%, var(--marker) 60%);
+}
+
+.doc-body code {
+  font-family: var(--f-mono);
+  padding: 0 4px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+}
+
+/* 요약은 영수증 종이처럼 표시 */
+.doc-summary {
+  background: var(--paper);
+  color: var(--paper-ink);
+  padding: 22px 26px;
+  box-shadow: var(--shadow);
+  border-top: 4px solid var(--stamp);
+}
+
+.doc-summary .hand {
+  font-size: 1.7rem;
+  color: var(--stamp);
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.doc .foot a {
+  color: var(--muted);
+}
