@@ -176,12 +176,12 @@ export default function OrderForm({ editing, onSubmit, onToggle, onDelete, onCan
             >
               삭제
             </button>
-            <button type="submit" className="btn stamp">
+            <button type="submit" className="btn solid">
               변경 저장
             </button>
           </>
         ) : (
-          <button type="submit" className="btn stamp">
+          <button type="submit" className="btn solid">
             영수증에 추가 →
           </button>
         )}
