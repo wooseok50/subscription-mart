@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent, type CSSProperties } from 'react'
+import { lazy, Suspense, useEffect, useMemo, useRef, useState, type ChangeEvent, type CSSProperties } from 'react'
 import { buildReceipt, formatKRW, type ReceiptMode } from './calc'
 import HeroBoard from './components/HeroBoard'
 import InsightPanel from './components/InsightPanel'
@@ -6,9 +6,7 @@ import OrderForm from './components/OrderForm'
 import PaymentCalendar from './components/PaymentCalendar'
 import Receipt, { type Stamp } from './components/Receipt'
 import ReceiptControls from './components/ReceiptControls'
-import WrapCardModal from './components/WrapCardModal'
 import { buildRows } from './receiptRows'
-import { renderReceiptPng } from './render/receiptCanvas'
 import { sampleItems } from './sample'
 import { startOfToday } from './schedule'
 import { copyText, decodeShare, downloadBlob, shareImage, shareUrl, type ShareResult } from './share'
@@ -20,6 +18,20 @@ import { wrapStats } from './wrap'
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>
   userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }>
+}
+
+// 이미지 생성 코드는 첫 로딩에서 분리. 공유 시 사용자 제스처 유효 시간 내 호출되도록 유휴 시간에 미리 받아둠
+const loadReceiptCanvas = () => import('./render/receiptCanvas')
+const loadWrapModal = () => import('./components/WrapCardModal')
+const WrapCardModal = lazy(loadWrapModal)
+
+function prefetchOnIdle() {
+  const run = () => {
+    loadReceiptCanvas().catch(() => {})
+    loadWrapModal().catch(() => {})
+  }
+  if ('requestIdleCallback' in window) requestIdleCallback(run, { timeout: 3000 })
+  else setTimeout(run, 1500)
 }
 
 const NO_CUTS: ReadonlySet<string> = new Set()
@@ -55,6 +67,7 @@ export default function App() {
   const [printedAt] = useState(() => new Date())
 
   useEffect(() => saveData(data), [data])
+  useEffect(prefetchOnIdle, [])
 
   useEffect(() => {
     const onHash = () => {
@@ -187,15 +200,29 @@ export default function App() {
 
   const saveImage = () =>
     withBusy(async () => {
+      const { renderReceiptPng } = await loadReceiptCanvas()
       downloadBlob(await renderReceiptPng(rows, theme), `subscription-receipt-${fileStamp()}.png`)
       notify(RESULT_TEXT.downloaded)
     })
 
   const shareReceipt = () =>
     withBusy(async () => {
+      const { renderReceiptPng } = await loadReceiptCanvas()
       const blob = await renderReceiptPng(rows, theme)
       notify(RESULT_TEXT[await shareImage(blob, `subscription-receipt-${fileStamp()}.png`, shareMessage())])
     })
+
+  const exportIcs = async () => {
+    try {
+      const { buildIcs } = await import('./ics')
+      const { text, exported, skipped } = buildIcs(data.items, data.usdRate, today)
+      if (exported === 0) return notify('결제일을 적은 구독이 없어요. 주문서에 결제일을 먼저 적어 주세요.')
+      downloadBlob(new Blob([text], { type: 'text/calendar;charset=utf-8' }), `subscription-payments-${fileStamp()}.ics`)
+      notify(`${exported}개 결제 일정을 내보냈어요. 파일을 열어 캘린더에 추가하세요.${skipped ? ` (결제일 없는 ${skipped}개 제외)` : ''}`)
+    } catch {
+      notify('캘린더 파일을 만들지 못했어요.')
+    }
+  }
 
   const copyLink = async () => notify(RESULT_TEXT[await copyText(shareUrl(viewing))])
 
@@ -414,7 +441,7 @@ export default function App() {
             <span>03</span> 결제 일정표
             <small>언제 얼마가 빠져나가는지 달력으로 확인해요</small>
           </h2>
-          <PaymentCalendar items={data.items} usdRate={data.usdRate} today={today} onSelect={select} />
+          <PaymentCalendar items={data.items} usdRate={data.usdRate} today={today} onSelect={select} onExport={exportIcs} />
         </section>
       )}
 
@@ -512,12 +539,14 @@ export default function App() {
       </footer>
 
       {wrap && (
-        <WrapCardModal
-          stats={wrap}
-          shareText={`나의 구독 결산 🧾 ${shareUrl(data)}`}
-          onClose={() => setWrapOpen(false)}
-          onResult={(r) => notify(RESULT_TEXT[r])}
-        />
+        <Suspense fallback={null}>
+          <WrapCardModal
+            stats={wrap}
+            shareText={`나의 구독 결산 🧾 ${shareUrl(data)}`}
+            onClose={() => setWrapOpen(false)}
+            onResult={(r) => notify(RESULT_TEXT[r])}
+          />
+        </Suspense>
       )}
 
       {toast && (

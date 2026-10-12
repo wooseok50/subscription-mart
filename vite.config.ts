@@ -52,11 +52,26 @@ function securityTxt(url: string): Plugin {
   }
 }
 
+/**
+ * @fontsource CSS에서 woff 대체 경로 제거
+ * 지원 대상 브라우저는 모두 woff2를 읽으므로 woff는 미사용. CSS 크기와 배포 파일 수 감소 목적
+ */
+function woff2Only(): Plugin {
+  return {
+    name: 'woff2-only',
+    enforce: 'pre',
+    transform(code, id) {
+      if (!id.includes('@fontsource') || !id.endsWith('.css')) return null
+      return { code: code.replace(/,\s*url\([^)]*\.woff\)\s*format\(['"]woff['"]\)/g, ''), map: null }
+    },
+  }
+}
+
 const SITE = resolveSiteUrl()
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), siteUrl(SITE), securityTxt(SITE)],
+  plugins: [woff2Only(), react(), siteUrl(SITE), securityTxt(SITE)],
   build: {
     // 작은 폰트 subset이 data: URI로 인라인되면 CSP font-src 'self'에 차단되므로 폰트는 항상 파일로 분리함
     assetsInlineLimit: (file) => (/\.woff2?$/.test(file) ? false : undefined),

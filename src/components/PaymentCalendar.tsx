@@ -8,11 +8,12 @@ interface Props {
   usdRate: number
   today: Date
   onSelect: (id: string) => void
+  onExport?: () => void
 }
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토']
 
-export default function PaymentCalendar({ items, usdRate, today, onSelect }: Props) {
+export default function PaymentCalendar({ items, usdRate, today, onSelect, onExport }: Props) {
   const [view, setView] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1))
   const active = useMemo(() => items.filter((s) => s.active), [items])
   const undated = active.filter((s) => !s.startDate).length
@@ -129,6 +130,18 @@ export default function PaymentCalendar({ items, usdRate, today, onSelect }: Pro
             </div>
           </dl>
         </div>
+
+        {onExport && (
+          <div className="card ics-card">
+            <h3>
+              결제 전날 알림 받기 <small>.ics</small>
+            </h3>
+            <p className="muted small">구글·애플·삼성 캘린더에 결제일을 반복 일정으로 넣어요. 서버 없이 캘린더 앱이 알려줘요.</p>
+            <button type="button" className="btn solid small" onClick={onExport} disabled={active.length === 0}>
+              📅 내 캘린더에 추가
+            </button>
+          </div>
+        )}
 
         <h3 className="hand">다가오는 결제</h3>
         {upcoming.length === 0 ? (

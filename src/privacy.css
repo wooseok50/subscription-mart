@@ -1,8 +1,4 @@
-/* 개인정보 안내 페이지. 앱과 같은 토큰·글꼴 재사용 */
-@import '@fontsource/gowun-dodum/400.css';
-@import '@fontsource/nanum-gothic-coding/400.css';
-@import '@fontsource/nanum-gothic-coding/700.css';
-@import '@fontsource/nanum-pen-script/400.css';
+/* 개인정보 안내 페이지. 앱과 같은 토큰 재사용 (글꼴은 privacy.ts에서 불러옴) */
 @import './index.css';
 
 .doc {
