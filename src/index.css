@@ -1751,6 +1751,16 @@ button.r-main:hover {
   margin-bottom: 22px;
 }
 
+/* 캘린더 내보내기 */
+.ics-card {
+  margin-bottom: 22px;
+  background: linear-gradient(135deg, var(--tint-sky), var(--card) 70%);
+}
+
+.ics-card p {
+  margin-bottom: 12px;
+}
+
 .month-stats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
