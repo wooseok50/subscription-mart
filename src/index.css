@@ -12,9 +12,11 @@
   --paper: #fffdf8;
   --paper-ink: #24201c;
   --paper-faint: #8a8279;
-  --slip: #fff4b5;
-  --slip-line: #f0d670;
+  /* 주문서: 흰 메모지 + 토마토 머리띠 + 하늘색 줄 */
+  --slip: #fffdf9;
+  --slip-line: rgb(47 124 246 / 0.16);
   --slip-head: #ef4b3c;
+  --slip-band: linear-gradient(100deg, #ef4b3c, #ff7a5c 60%, #ff9a6b);
   --pen: #2453c9;
   --stamp: #e5443a;
   --marker: rgb(255 207 51 / 0.6);
@@ -509,44 +511,52 @@ button {
   position: relative;
   background: var(--slip);
   color: var(--paper-ink);
-  border-radius: 3px;
+  border-radius: 16px 16px 8px 8px;
   box-shadow: var(--shadow);
   padding: 0 0 22px;
-  transform: rotate(-0.4deg);
+  overflow: hidden;
+  /* 종이는 다크 모드에서도 밝으므로 날짜·선택 컨트롤도 밝게 표시 */
+  color-scheme: light;
 }
 
 /* 상단 절취선 구멍 */
 .order::before {
   content: '';
   position: absolute;
-  inset: -6px 0 auto;
-  height: 12px;
-  background: radial-gradient(circle at 8px 6px, var(--desk) 4px, transparent 4.5px) 0 0 / 16px 12px repeat-x;
+  inset: 62px 0 auto;
+  height: 10px;
+  background: radial-gradient(circle at 8px 5px, var(--slip) 3.5px, transparent 4px) 0 0 / 16px 10px repeat-x;
+  z-index: 1;
 }
 
 .order-head {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
-  padding: 22px 26px 12px;
-  border-bottom: 2px solid var(--slip-head);
+  align-items: center;
+  height: 67px;
+  padding: 0 26px;
+  background: var(--slip-band);
 }
 
 .order-title {
   font-family: var(--f-hand);
   font-size: 2.2rem;
   line-height: 1;
-  color: var(--slip-head);
+  color: #fff;
+  text-shadow: 0 1px 0 rgb(120 30 20 / 0.25);
 }
 
 .order-no {
   font-family: var(--f-mono);
-  font-size: 0.8rem;
-  color: var(--slip-head);
+  font-size: 0.75rem;
+  color: #fff;
+  background: rgb(255 255 255 / 0.22);
+  border-radius: 999px;
+  padding: 3px 10px;
 }
 
 .order-quick {
-  padding: 14px 26px 4px;
+  padding: 20px 26px 4px;
 }
 
 .order-quick .hand {
@@ -562,18 +572,34 @@ button {
 }
 
 .chip {
-  border: 1px dashed color-mix(in srgb, var(--paper-ink) 35%, transparent);
-  background: rgb(255 255 255 / 0.55);
-  border-radius: 3px;
-  padding: 3px 10px;
+  border: 1.5px solid transparent;
+  background: #fff6d6;
+  border-radius: 999px;
+  padding: 4px 12px;
   font-size: 0.85rem;
   color: var(--paper-ink);
+  transition:
+    transform 0.12s ease,
+    border-color 0.12s ease;
+}
+
+/* 페이지 파스텔 4색 순환 */
+.chip:nth-child(4n + 2) {
+  background: #e3f7ee;
+}
+
+.chip:nth-child(4n + 3) {
+  background: #e6f0ff;
+}
+
+.chip:nth-child(4n + 4) {
+  background: #ffece4;
 }
 
 .chip:hover {
-  border-style: solid;
   border-color: var(--pen);
   color: var(--pen);
+  transform: translateY(-1px);
 }
 
 .order-lines {
