@@ -17,22 +17,30 @@ export default function PaymentCalendar({ items, usdRate, today, onSelect }: Pro
   const active = useMemo(() => items.filter((s) => s.active), [items])
   const undated = active.filter((s) => !s.startDate).length
 
-  const { cells, monthTotal } = useMemo(() => {
+  const { cells, monthTotal, monthCount, peak } = useMemo(() => {
     const first = view
     const next = new Date(view.getFullYear(), view.getMonth() + 1, 1)
     const byDay = new Map<number, Subscription[]>()
     let total = 0
+    let count = 0
     for (const s of active) {
       for (const d of paymentsBetween(s, first, next)) {
         byDay.set(d.getDate(), [...(byDay.get(d.getDate()) ?? []), s])
         total += unitKRW(s, usdRate)
+        count++
       }
+    }
+    // 결제 금액이 가장 큰 날
+    let best: { day: number; amount: number } | null = null
+    for (const [day, subs] of byDay) {
+      const amount = subs.reduce((sum, s) => sum + unitKRW(s, usdRate), 0)
+      if (!best || amount > best.amount) best = { day, amount }
     }
     const lead = first.getDay()
     const days = daysBetween(first, next)
     const list: ({ day: number; subs: Subscription[] } | null)[] = Array.from({ length: lead }, () => null)
     for (let d = 1; d <= days; d++) list.push({ day: d, subs: byDay.get(d) ?? [] })
-    return { cells: list, monthTotal: total }
+    return { cells: list, monthTotal: total, monthCount: count, peak: best }
   }, [view, active, usdRate])
 
   const upcoming = useMemo(() => {
@@ -102,9 +110,29 @@ export default function PaymentCalendar({ items, usdRate, today, onSelect }: Pro
       </div>
 
       <aside className="upcoming">
+        <div className="card month-card">
+          <h3>
+            {view.getMonth() + 1}월 결제 요약 <small>{view.getFullYear()}</small>
+          </h3>
+          <dl className="month-stats">
+            <div style={{ '--tint': 'var(--tint-sun)' } as CSSProperties}>
+              <dt>결제 건수</dt>
+              <dd>{monthCount}건</dd>
+            </div>
+            <div style={{ '--tint': 'var(--tint-peach)' } as CSSProperties}>
+              <dt>빠져나갈 돈</dt>
+              <dd>{formatKRW(monthTotal)}</dd>
+            </div>
+            <div className="wide" style={{ '--tint': 'var(--tint-sky)' } as CSSProperties}>
+              <dt>지갑이 가장 아픈 날</dt>
+              <dd>{peak ? `${view.getMonth() + 1}월 ${peak.day}일 · ${formatKRW(peak.amount)}` : '결제 없음'}</dd>
+            </div>
+          </dl>
+        </div>
+
         <h3 className="hand">다가오는 결제</h3>
         {upcoming.length === 0 ? (
-          <p className="muted">30일 안에 예정된 결제가 없어요.</p>
+          <p className="upcoming-empty">30일 안에 예정된 결제가 없어요. 주문서에 결제일을 적으면 여기에 D-day가 떠요.</p>
         ) : (
           <ul>
             {upcoming.map(({ s, date }) => {

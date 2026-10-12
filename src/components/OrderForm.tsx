@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { parseDate, startOfToday, toDateString } from '../schedule'
 import { CATEGORIES, CYCLE_LABEL, type Currency, type Cycle, type Subscription } from '../types'
 
@@ -8,6 +8,8 @@ interface Props {
   onToggle: (id: string) => void
   onDelete: (id: string) => void
   onCancel: () => void
+  /** 잊기 쉬운 구독 목록에서 고른 품목 */
+  prefill?: { name: string; category: string } | null
 }
 
 const QUICK: { name: string; category: string; currency?: Currency }[] = [
@@ -23,15 +25,21 @@ const QUICK: { name: string; category: string; currency?: Currency }[] = [
   { name: '쿠팡 와우', category: '쇼핑' },
 ]
 
-export default function OrderForm({ editing, onSubmit, onToggle, onDelete, onCancel }: Props) {
+export default function OrderForm({ editing, onSubmit, onToggle, onDelete, onCancel, prefill }: Props) {
   // 편집 대상 변경 시 부모의 key 교체로 초기화됨
-  const [name, setName] = useState(editing?.name ?? '')
+  const [name, setName] = useState(editing?.name ?? prefill?.name ?? '')
   const [price, setPrice] = useState(editing ? String(editing.price) : '')
   const [currency, setCurrency] = useState<Currency>(editing?.currency ?? 'KRW')
   const [cycle, setCycle] = useState<Cycle>(editing?.cycle ?? 'monthly')
-  const [category, setCategory] = useState(editing?.category ?? '영상')
+  const [category, setCategory] = useState(editing?.category ?? prefill?.category ?? '영상')
   const [startDate, setStartDate] = useState(editing ? (editing.startDate ?? '') : toDateString(startOfToday()))
   const [error, setError] = useState('')
+  const priceRef = useRef<HTMLInputElement>(null)
+
+  // 품목이 채워진 채 열리면 바로 금액 입력으로 이동
+  useEffect(() => {
+    if (prefill && !editing) priceRef.current?.focus({ preventScroll: true })
+  }, [prefill, editing])
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
@@ -97,6 +105,7 @@ export default function OrderForm({ editing, onSubmit, onToggle, onDelete, onCan
           <label className="line grow">
             <span>금액</span>
             <input
+              ref={priceRef}
               type="number"
               inputMode="decimal"
               min="0"
