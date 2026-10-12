@@ -1,5 +1,7 @@
-import { useEffect, useMemo, useRef, useState, type ChangeEvent } from 'react'
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type CSSProperties } from 'react'
 import { buildReceipt, formatKRW, type ReceiptMode } from './calc'
+import HeroBoard from './components/HeroBoard'
+import InsightPanel from './components/InsightPanel'
 import OrderForm from './components/OrderForm'
 import PaymentCalendar from './components/PaymentCalendar'
 import Receipt, { type Stamp } from './components/Receipt'
@@ -7,6 +9,7 @@ import ReceiptControls from './components/ReceiptControls'
 import WrapCardModal from './components/WrapCardModal'
 import { buildRows } from './receiptRows'
 import { renderReceiptPng } from './render/receiptCanvas'
+import { sampleItems } from './sample'
 import { startOfToday } from './schedule'
 import { copyText, decodeShare, downloadBlob, shareImage, shareUrl, type ShareResult } from './share'
 import { DEFAULT_REFS, loadData, parseData, saveData } from './storage'
@@ -44,6 +47,7 @@ export default function App() {
   const [toast, setToast] = useState<{ key: number; text: string } | null>(null)
   const [rateInput, setRateInput] = useState(String(data.usdRate))
   const [notice, setNotice] = useState('')
+  const [prefill, setPrefill] = useState<{ name: string; category: string; nonce: number } | null>(null)
   const [installEvt, setInstallEvt] = useState<BeforeInstallPromptEvent | null>(null)
   const fileRef = useRef<HTMLInputElement>(null)
   const orderRef = useRef<HTMLElement>(null)
@@ -113,6 +117,7 @@ export default function App() {
     updateItems((items) => (items.some((s) => s.id === item.id) ? items.map((s) => (s.id === item.id ? item : s)) : [...items, item]))
     setPrintingId(item.id)
     setEditingId(null)
+    setPrefill(null)
   }
 
   const toggleActive = (id: string) => {
@@ -141,6 +146,18 @@ export default function App() {
       else next.add(id)
       return next
     })
+
+  const fillSample = () => {
+    setData((d) => ({ ...d, items: sampleItems(today) }))
+    setPrintingId(null)
+    notify('예시로 채웠어요. 금액은 어림값이니 내 구독으로 바꿔 보세요.')
+  }
+
+  const pickForgotten = (name: string, category: string) => {
+    setEditingId(null)
+    setPrefill({ name, category, nonce: Date.now() })
+    orderRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   const select = (id: string) => {
     setEditingId(id)
@@ -252,63 +269,97 @@ export default function App() {
   return (
     <div className="page">
       <header className="hero no-print">
-        <p className="eyebrow">구독상회 · SUBSCRIPTION MART</p>
-        {readOnly ? (
-          <>
-            <h1>
-              누군가 보낸 <em>구독 영수증</em>이
-              <br />
-              도착했어요.
-            </h1>
-            <p className="lede">친구가 1년 동안 낼 구독료를 영수증으로 뽑아 보냈어요. 내 것도 궁금하다면 지금 바로 뽑아 보세요.</p>
-          </>
-        ) : (
-          <>
-            <h1>
-              매달 조금씩,
-              <br />
-              1년이면 <em>영수증 한 장.</em>
-            </h1>
-            <p className="lede">
-              넷플릭스 하나, 클라우드 하나. 따로 보면 커피 몇 잔 값이지만 1년치를 모아 뽑아보면 이야기가 달라져요. 주문서에 지금 쓰는 구독을
-              적으면 프린터가 앞으로 1년 동안 낼 돈을 영수증으로 출력해 드려요.
-            </p>
-            {receipt.total > 0 && mode === 'year' && (
-              <p className="hero-peek">
-                지금까지 적은 구독으로는 1년에 <strong>{formatKRW(receipt.subtotal)}</strong>을 내게 돼요.
+        <div className="hero-copy">
+          <p className="eyebrow">🧾 구독상회 · SUBSCRIPTION MART</p>
+          {readOnly ? (
+            <>
+              <h1>
+                누군가 보낸 <em>구독 영수증</em>이
+                <br />
+                도착했어요.
+              </h1>
+              <p className="lede">친구가 1년 동안 낼 구독료를 영수증으로 뽑아 보냈어요. 내 것도 궁금하다면 지금 바로 뽑아 보세요.</p>
+              <div className="btn-row hero-cta">
+                <button type="button" className="btn solid" onClick={leaveShared}>
+                  나도 뽑아보기 →
+                </button>
+                <button type="button" className="btn ghost" onClick={importShared}>
+                  이 목록으로 시작하기
+                </button>
+              </div>
+              <p className="muted small hero-note">링크에 담긴 목록만 보여줘요. 내 브라우저에 저장되지 않아요.</p>
+            </>
+          ) : (
+            <>
+              <h1>
+                매달 조금씩,
+                <br />
+                1년이면 <em>영수증 한 장.</em>
+              </h1>
+              <p className="lede">
+                넷플릭스 하나, 클라우드 하나. 따로 보면 커피 몇 잔 값이지만 1년치를 모아 뽑아보면 이야기가 달라져요. 지금 쓰는 구독을 적으면
+                앞으로 1년 동안 낼 돈을 영수증으로 출력해 드려요.
               </p>
-            )}
-          </>
-        )}
+              <ol className="hero-steps">
+                <li style={{ '--c': 'var(--accent)' } as CSSProperties}>
+                  <b>1</b> 주문서에 적고
+                </li>
+                <li style={{ '--c': 'var(--sun)' } as CSSProperties}>
+                  <b>2</b> 1년치 영수증 뽑고
+                </li>
+                <li style={{ '--c': 'var(--mint)' } as CSSProperties}>
+                  <b>3</b> ✂ 해지해 보고
+                </li>
+                <li style={{ '--c': 'var(--sky)' } as CSSProperties}>
+                  <b>4</b> 친구에게 공유
+                </li>
+              </ol>
+            </>
+          )}
+        </div>
+        <HeroBoard
+          items={viewing.items}
+          usdRate={viewing.usdRate}
+          refs={viewing.refs}
+          today={today}
+          readOnly={readOnly}
+          onSample={readOnly ? undefined : fillSample}
+          onStart={readOnly ? undefined : () => orderRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })}
+        />
       </header>
 
       <main className="counter">
         {readOnly ? (
-          <section className="col-order shared-note no-print" aria-label="받은 영수증 안내">
-            <p className="hand big-note">“{viewing.items.filter((s) => s.active).length}개 구독, 1년에 {formatKRW(buildReceipt(viewing.items, viewing.usdRate, viewing.refs, today).total)}”</p>
-            <p className="muted">링크에 담긴 목록만 보여줘요. 내 브라우저에 저장되지 않아요.</p>
-            <div className="btn-col">
-              <button type="button" className="btn stamp" onClick={leaveShared}>
-                나도 뽑아보기 →
-              </button>
-              <button type="button" className="btn ghost" onClick={importShared}>
-                이 목록으로 시작하기
-              </button>
-            </div>
+          <section className="col-order no-print" aria-labelledby="step-shared">
+            <h2 id="step-shared" className="step">
+              <span>✉</span> 받은 영수증 살펴보기
+              <small>어떤 구독에 많이 쓰는지 한눈에 봐요</small>
+            </h2>
+            <InsightPanel items={viewing.items} usdRate={viewing.usdRate} refs={viewing.refs} today={today} />
           </section>
         ) : (
           <section className="col-order no-print" ref={orderRef} aria-labelledby="step1">
             <h2 id="step1" className="step">
               <span>01</span> 주문서 작성
+              <small>지금 쓰는 구독을 하나씩 적어요. 영수증 품목을 누르면 여기서 고칠 수 있어요</small>
             </h2>
-            <OrderForm key={editingId ?? 'new'} editing={editing} onSubmit={upsert} onToggle={toggleActive} onDelete={remove} onCancel={() => setEditingId(null)} />
-            <p className="tip hand">영수증의 품목을 누르면 여기서 고칠 수 있어요 ✎</p>
+            <OrderForm
+              key={editingId ?? `new-${prefill?.nonce ?? 0}`}
+              editing={editing}
+              prefill={prefill}
+              onSubmit={upsert}
+              onToggle={toggleActive}
+              onDelete={remove}
+              onCancel={() => setEditingId(null)}
+            />
+            <InsightPanel items={data.items} usdRate={data.usdRate} refs={data.refs} today={today} onPick={pickForgotten} />
           </section>
         )}
 
         <section className="col-receipt" aria-labelledby="step2">
           <h2 id="step2" className="step no-print">
             <span>02</span> {mode === 'life' ? '누적 영수증' : '1년치 영수증'}
+            <small>{mode === 'life' ? '처음 결제한 날부터 오늘까지 낸 돈이에요' : '오늘부터 1년 동안 실제로 결제될 횟수로 계산해요'}</small>
           </h2>
           <ReceiptControls
             theme={viewing.theme}
@@ -361,6 +412,7 @@ export default function App() {
         <section className="schedule no-print" aria-labelledby="step3">
           <h2 id="step3" className="step">
             <span>03</span> 결제 일정표
+            <small>언제 얼마가 빠져나가는지 달력으로 확인해요</small>
           </h2>
           <PaymentCalendar items={data.items} usdRate={data.usdRate} today={today} onSelect={select} />
         </section>

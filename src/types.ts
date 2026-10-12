@@ -35,14 +35,14 @@ export interface AppData {
 export const CATEGORIES = ['영상', '음악', '클라우드', '생산성', '게임', '쇼핑', '교육', '기타'] as const
 
 export const CATEGORY_COLOR: Record<string, string> = {
-  영상: '#d9534f',
-  음악: '#3f8f6b',
-  클라우드: '#3d6fb6',
-  생산성: '#7a55b5',
-  게임: '#d98a1c',
-  쇼핑: '#c2577f',
-  교육: '#2c8c99',
-  기타: '#7d7469',
+  영상: '#ef4b3c',
+  음악: '#1fa774',
+  클라우드: '#2f7cf6',
+  생산성: '#8b5cf6',
+  게임: '#f59e0b',
+  쇼핑: '#ec4899',
+  교육: '#14b8a6',
+  기타: '#a1958a',
 }
 
 export const CYCLE_LABEL: Record<Cycle, string> = {

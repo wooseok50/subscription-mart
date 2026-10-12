@@ -5,10 +5,10 @@ import { createCanvas, FAMILY, fitText, font, paperPath, preloadFonts, toBlob } 
 
 const W = 1080
 const H = 1920
-const PAPER = '#fffdf6'
-const INK = '#2b2622'
-const FAINT = '#8c8478'
-const STAMP = '#c8423a'
+const PAPER = '#ffffff'
+const INK = '#1f1b18'
+const FAINT = '#8a8279'
+const STAMP = '#e5443a'
 
 /** 인스타 스토리 비율(9:16) 결산 카드 */
 export async function renderWrapPng(stats: WrapStats, siteHost: string): Promise<Blob> {
@@ -25,29 +25,31 @@ export async function renderWrapPng(stats: WrapStats, siteHost: string): Promise
 
   const { canvas, ctx } = createCanvas(W, H, 1)
 
-  // 밤 책상 배경과 스탠드 조명
-  const bg = ctx.createLinearGradient(0, 0, 0, H)
-  bg.addColorStop(0, '#2a241f')
-  bg.addColorStop(1, '#161311')
-  ctx.fillStyle = bg
+  // 화면과 같은 밝은 크림 바탕 + 파스텔 조명
+  ctx.fillStyle = '#fffaf1'
   ctx.fillRect(0, 0, W, H)
-  const glow = ctx.createRadialGradient(260, 120, 40, 260, 120, 900)
-  glow.addColorStop(0, 'rgba(255, 196, 120, 0.28)')
-  glow.addColorStop(1, 'rgba(255, 196, 120, 0)')
-  ctx.fillStyle = glow
-  ctx.fillRect(0, 0, W, H)
+  const glow = (x: number, y: number, r: number, color: string) => {
+    const g = ctx.createRadialGradient(x, y, 0, x, y, r)
+    g.addColorStop(0, color)
+    g.addColorStop(1, 'rgba(255, 255, 255, 0)')
+    ctx.fillStyle = g
+    ctx.fillRect(0, 0, W, H)
+  }
+  glow(120, 60, 900, 'rgba(255, 214, 92, 0.55)')
+  glow(1080, 700, 800, 'rgba(255, 170, 140, 0.4)')
+  glow(400, 1920, 900, 'rgba(120, 220, 180, 0.35)')
 
   ctx.textAlign = 'left'
-  ctx.fillStyle = '#ff8a7a'
+  ctx.fillStyle = STAMP
   ctx.font = font(28, FAMILY.mono)
   ctx.letterSpacing = '6px'
   ctx.fillText('구독상회 · SUBSCRIPTION WRAPPED', 90, 150)
   ctx.letterSpacing = '0px'
 
-  ctx.fillStyle = '#efe6d8'
+  ctx.fillStyle = INK
   ctx.font = font(124, FAMILY.hand)
   ctx.fillText('나의 구독 결산', 86, 290)
-  ctx.fillStyle = '#a59a8b'
+  ctx.fillStyle = '#6e665e'
   ctx.font = font(32, FAMILY.round)
   ctx.fillText(`${fmtDate(stats.from)} ~ ${fmtDate(stats.to)} · 앞으로 1년`, 92, 350)
 
@@ -57,7 +59,7 @@ export async function renderWrapPng(stats: WrapStats, siteHost: string): Promise
   const pw = W - px * 2
   const ph = 1300
   ctx.save()
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.55)'
+  ctx.shadowColor = 'rgba(80, 50, 20, 0.28)'
   ctx.shadowBlur = 50
   ctx.shadowOffsetY = 18
   ctx.fillStyle = PAPER
@@ -151,7 +153,7 @@ export async function renderWrapPng(stats: WrapStats, siteHost: string): Promise
       ctx.textAlign = 'left'
       const barX = L + 150
       const barW = inner - 150 - 100
-      ctx.fillStyle = '#efe7da'
+      ctx.fillStyle = '#f1ece4'
       ctx.fillRect(barX, y - 20, barW, 16)
       ctx.fillStyle = c.color
       ctx.fillRect(barX, y - 20, Math.max(barW * c.ratio, 6), 16)
@@ -190,11 +192,11 @@ export async function renderWrapPng(stats: WrapStats, siteHost: string): Promise
   ctx.restore()
 
   ctx.textAlign = 'center'
-  ctx.fillStyle = '#efe6d8'
+  ctx.fillStyle = STAMP
   ctx.font = font(52, FAMILY.hand)
   ctx.fillText('내 영수증도 뽑아보기 →', W / 2, H - 112)
   if (siteHost) {
-    ctx.fillStyle = '#a59a8b'
+    ctx.fillStyle = '#6e665e'
     ctx.font = font(28, FAMILY.mono)
     ctx.fillText(siteHost, W / 2, H - 62)
   }
